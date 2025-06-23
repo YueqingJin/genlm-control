@@ -27,6 +27,8 @@ class TokenSampler(SubModel):
     def __init__(self, target):
         super().__init__()
         self.target = target
+        self.model = target.model
+        self.tokenizer = target.tokenizer
         self.token_type = self.target.token_type
 
     async def start_weight(self):

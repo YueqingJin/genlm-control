@@ -11,7 +11,7 @@ from llamppl import smc_standard
 from genlm.control.potential import Potential
 from genlm.control.constant import EOS, EndOfSequence
 from genlm.control.sampler.token import TokenSampler
-
+USE_SIM = False
 
 class SMC:
     """This class implements sequential Monte Carlo (SMC) inference for controlled text generation.
@@ -290,6 +290,44 @@ class SequenceModel(Model):
     async def step(self):
         unit = await self.call(self.unit_sampler)
         self.token_ctx.append(unit)
+        if USE_SIM:
+            from genlm.control.simulation import (
+                is_simulation_point,
+                simulated_completion_generate,
+            )
+            #  Extract the list of token ids in the particles
+            ids_only = [tok for tok in self.token_ctx if isinstance(tok, int)]
+            text = self.unit_sampler.tokenizer.decode(ids_only, skip_special_tokens=True)
+
+            # If a breakpoint (line break/colon/semicolon) is reached, perform a one-time batch completion
+            if is_simulation_point(text):
+                complete = simulated_completion_generate(
+                    prefix=text,
+                    model=self.unit_sampler.model,
+                    tokenizer=self.unit_sampler.tokenizer,
+                    max_new_tokens=50,
+                )
+
+                # Extract the id list corresponding to the "completed entire section"
+                all_ids = self.unit_sampler.tokenizer(
+                    complete, return_tensors="pt"
+                ).input_ids[0].tolist()
+
+                # The completion result evaluates the global constraint increment
+                if self.critic:
+                    # Calculate the global logarithmic weight for this time
+                    phi_now = await self.critic.score(all_ids)
+                    # If -inf, it will be eliminated immediately
+                    if phi_now == float("-inf"):
+                        self.finish()
+                        return
+                    # Otherwise, update the weight with the difference of "this time - last time"
+                    prev = getattr(self, "prev_glob_logp", 0.0)
+                    self.score(phi_now - prev)
+                    # Save the global logarithmic weights
+                    self.prev_glob_logp = phi_now
+                return
+        # end
 
         inf_weight = self.weight == float("-inf")
         if inf_weight:
