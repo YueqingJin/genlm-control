@@ -24,6 +24,8 @@ dependencies = [
     "torch",
     "json-stream",
     "jsonschema[format-nongpl]",
+    "datasets",
+  "transformers>=4.30",
 ]
 
 [project.optional-dependencies]

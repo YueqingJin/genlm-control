@@ -12,7 +12,7 @@ from transformers import AutoModelForCausalLM, AutoTokenizer
 import torch
 
 def load_llama(
-    repo: str = "meta-llama/Llama-3.2-1B-Instruct",
+    repo = "meta-llama/Llama-3.2-1B-Instruct",
 ):
     """
     First, load it on the CPU with FP16
@@ -52,43 +52,51 @@ def simulated_completion_generate(
     prefix: str,
     model,            # HF
     tokenizer,        # HF Tokenizer
-    max_new_tokens: int = 50,
+    max_new_tokens: int = 600,
 ) -> str:
     """
     Receive prefix (str) and return the complete text
     """
 
     # tokenizer
+    # inputs = tokenizer(prefix, return_tensors='pt')
+    # input_ids = inputs['input_ids']
+    # attention_mask = inputs.get('attention_mask', None)
     inputs = tokenizer(prefix, return_tensors='pt')
-    input_ids = inputs['input_ids']
+    input_ids = inputs['input_ids'].to('mps')
     attention_mask = inputs.get('attention_mask', None)
+    if attention_mask is not None:
+        attention_mask = attention_mask.to('mps')
 
     # CPU
+    # orig_device = next(model.parameters()).device
+    # model_cpu = model.to('cpu')
     orig_device = next(model.parameters()).device
-    model_cpu = model.to('cpu')
+    model = model.to('mps')
 
     # CPU simulation
-    output_ids = model_cpu.generate(
+    output_ids = model.generate(
         input_ids=input_ids,
         attention_mask=attention_mask,
         max_new_tokens=max_new_tokens,
         do_sample=True,
-        top_k=50,
+        top_k=600,
         top_p=0.95,
         temperature=1.0,
         pad_token_id=tokenizer.eos_token_id,
     )
 
-    # MPS
-    model_cpu.to(orig_device)
 
-    return tokenizer.decode(output_ids[0], skip_special_tokens=True)
+    model.to(orig_device)
+
+    # return tokenizer.decode(output_ids[0], skip_special_tokens=True)
+    return tokenizer.decode(output_ids[0].cpu(), skip_special_tokens=True)
 
 def simulated_completion_manual(
     prefix: str,
     model: PreTrainedModel,
     tokenizer: PreTrainedTokenizerBase,
-    max_new_tokens: int = 50,
+    max_new_tokens: int = 600,
     temperature: float = 1.0,
     top_k: int = 0,
     top_p: float = 1.0

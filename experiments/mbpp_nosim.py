@@ -7,17 +7,25 @@ MODEL, TOK = load_llama()
 # turn off
 import genlm.control.sampler.sequence as seq_mod
 seq_mod.USE_SIM = False
-from genlm.control.potential.built_in.json import JsonSchema
 from genlm.control.potential import PromptedLLM
-from genlm.control.sampler.token   import DirectTokenSampler
+from genlm.control.sampler.token  import DirectTokenSampler
 from genlm.control.sampler.sequence import SMC
 from genlm.control.constant import EOS
+from genlm.backend.tokenization.vocab import decode_vocab
+from genlm.control.potential.built_in.json import JsonSchema
+TOK.eos_token = "</s>"
+TOK.eos_token_id = 2
+MODEL.config.eos_token_id = 2
+
 
 class Shim:
     def __init__(self, mdl, tok):
         self.model, self.tokenizer = mdl, tok
         self.device = next(mdl.parameters()).device
-        self.byte_vocab = {tid: s.encode() for s, tid in tok.get_vocab().items()}
+        self.byte_vocab, _ = decode_vocab(tok)
+        vocab_size = len(self.byte_vocab)
+        self.str_vocab = [""] * vocab_size
+        self.str_vocab[2] = "</s>"
 
     async def next_token_logprobs(self, ids):
         import torch, torch.nn.functional as F
@@ -36,8 +44,13 @@ async def generate(prompt: str,
 
     # sampler
     llm = Shim(MODEL, TOK)
+    eos_bytes = llm.byte_vocab[2]
     prefix_ids = TOK(prompt, return_tensors="pt").input_ids[0].tolist()
-    pllm = PromptedLLM(llm, prefix_ids, eos_tokens=[TOK.eos_token_id])
+    pllm = PromptedLLM(
+        llm,
+        prefix_ids,
+        eos_tokens=[eos_bytes]
+    )
     pllm.tokenizer = TOK
     sampler = DirectTokenSampler(pllm)
 
@@ -48,11 +61,24 @@ async def generate(prompt: str,
         "required": ["return"],
         "additionalProperties": False,
     }
-    critic = JsonSchema(schema)
 
+    class LenientJSON(JsonSchema):
+        async def prefix(self, context):
+            try:
+                return await super().prefix(context=context)
+            except StopIteration:  #  StopIteration
+                return 0.0
+            except RuntimeError as e:  # RuntimeError
+                if "StopIteration" in str(e):  # coroutine raised StopIteration
+                    return 0.0
+                raise
+    critic = (
+        LenientJSON(schema)
+        .coerce(pllm, f=b"".join)  # int → bytes
+    )
     #SMC
     seqs = await SMC(sampler, critic)(
-        n_particles=20,
+        n_particles=80,
         ess_threshold=0.5,
         max_tokens=max_tokens
     )
