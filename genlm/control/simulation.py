@@ -11,13 +11,52 @@ def load_gpt2(model_name: str = "gpt2"):
 from transformers import AutoModelForCausalLM, AutoTokenizer
 import torch
 
+# def load_llama(
+#     repo = "meta-llama/Llama-3.2-1B-Instruct",
+# ):
+#     """
+#     First, load it on the CPU with FP16
+#     then MPS
+#     """
+#     # Tokenizer
+#     tokenizer = AutoTokenizer.from_pretrained(
+#         repo,
+#         use_fast=True,
+#         trust_remote_code=True,
+#     )
+#
+#     # CPU load FP16
+#     model = AutoModelForCausalLM.from_pretrained(
+#         repo,
+#         torch_dtype=torch.float16,
+#         device_map={"": "cpu"},
+#         trust_remote_code=True,
+#     )
+#
+#     # change MPS and eval
+#     model = model.to("mps").eval()
+#
+#     return model, tokenizer
+
 def load_llama(
-    repo = "meta-llama/Llama-3.2-1B-Instruct",
+    repo: str = "meta-llama/Llama-3.2-1B-Instruct",
+    dtype=torch.float16,
 ):
     """
-    First, load it on the CPU with FP16
-    then MPS
+    根据当前环境自动选择设备：
+      • 有 CUDA → cuda
+      • 有 Apple MPS → mps
+      • 否则       → cpu
+    返回值仍然是 (model, tokenizer) —— 调用方不用改。
     """
+    # 选择设备
+    if torch.cuda.is_available():
+        device = "cuda"
+    elif torch.backends.mps.is_available():
+        device = "mps"
+    else:
+        device = "cpu"
+
     # Tokenizer
     tokenizer = AutoTokenizer.from_pretrained(
         repo,
@@ -25,18 +64,20 @@ def load_llama(
         trust_remote_code=True,
     )
 
-    # CPU load FP16
+    # Model
     model = AutoModelForCausalLM.from_pretrained(
         repo,
-        torch_dtype=torch.float16,
-        device_map={"": "cpu"},
+        torch_dtype=dtype,
+        device_map={"": device},   # 权重直接落到选定设备
         trust_remote_code=True,
-    )
-
-    # change MPS and eval
-    model = model.to("mps").eval()
+    ).eval()
 
     return model, tokenizer
+
+
+
+
+
 # Determine when to trigger simulation
 # def is_simulation_point(text: str) -> bool:
 #     """

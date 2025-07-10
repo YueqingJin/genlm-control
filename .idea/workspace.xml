@@ -5,15 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="ba7e3d84-84a5-4d81-bc21-82374b495ef0" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/experiments/python_simple.lark" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/experiments/simplify_lark.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/experiments/mbpp_nosim.py" beforeDir="false" afterPath="$PROJECT_DIR$/experiments/mbpp_nosim.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/experiments/mbpp_sim.py" beforeDir="false" afterPath="$PROJECT_DIR$/experiments/mbpp_sim.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/genlm/control/sampler/sequence.py" beforeDir="false" afterPath="$PROJECT_DIR$/genlm/control/sampler/sequence.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/genlm/control/simulation.py" beforeDir="false" afterPath="$PROJECT_DIR$/genlm/control/simulation.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nosim_results.csv" beforeDir="false" afterPath="$PROJECT_DIR$/nosim_results.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sim_results.csv" beforeDir="false" afterPath="$PROJECT_DIR$/sim_results.csv" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -123,7 +116,7 @@
       <workItem from="1750631139648" duration="3795000" />
       <workItem from="1750634956826" duration="17545000" />
       <workItem from="1750671060112" duration="69744000" />
-      <workItem from="1751318497891" duration="79939000" />
+      <workItem from="1751318497891" duration="81252000" />
     </task>
     <servers />
   </component>
