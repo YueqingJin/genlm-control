@@ -3,7 +3,8 @@
 import asyncio
 import torch
 from experiments.utils import load_mbpp, stopwatch, run_tests, record_result
-
+import sys
+sys.setrecursionlimit(10000)   # Raise the upper limit of recursion from 1000 to 10000
 #simulation
 import genlm.control.simulation as sim_mod
 _orig_sim = sim_mod.simulated_completion_generate
@@ -22,6 +23,7 @@ from experiments.mbpp_nosim import generate as _orig_generate
 CSV_PATH = "sim_results.csv"
 from genlm.control.sampler.sequence import SequenceModel as _SeqModelOrig
 from numbers import Integral
+SENTINEL = "\n### CODE START ###\n"
 
 def _patched_init(self, *args, **kwargs):
     # convert the positional parameter tuple to a modifiable list
@@ -78,8 +80,9 @@ async def main():
         sc = [0]
 
         # First accumulate, and then call the original completion
-        def counted_sim(prefix, model, tokenizer, max_new_tokens=50):
+        def counted_sim(prefix, model, tokenizer, max_new_tokens=400):
             sc[0] += 1
+            print(">>> called counted_sim, now =", sc[0])
             # f what is passed in is Shim, take the.model attribute of it
             hf_model = getattr(model, "model", model)
             return _orig_sim(prefix, hf_model, tokenizer, max_new_tokens)
@@ -87,9 +90,14 @@ async def main():
 
         print(f"=== Task {task['task_id']} ===")
         with stopwatch() as t:
+            # best_code, n_sol, n_ok = await _orig_generate(
+            #     task["prompt"]
+            #     , 800
+            # )
+            prompt = task["prompt"] + SENTINEL  # 题目 + 哨兵 拼成新 prompt
             best_code, n_sol, n_ok = await _orig_generate(
-                task["prompt"]
-                # , 800
+                prompt,  # ← 用新的 prompt
+                800
             )
 
         elapsed = t()

@@ -8,6 +8,7 @@ from arsenal import colors
 from llamppl import Model
 from llamppl import smc_standard
 
+
 from genlm.control.potential import Potential
 from genlm.control.constant import EOS, EndOfSequence
 from genlm.control.sampler.token import TokenSampler
@@ -305,7 +306,7 @@ class SequenceModel(Model):
                     prefix=text,
                     model=self.unit_sampler.model,
                     tokenizer=self.unit_sampler.tokenizer,
-                    max_new_tokens=50,
+                    max_new_tokens=400,
                 )
 
                 # Extract the id list corresponding to the "completed entire section"
@@ -313,18 +314,23 @@ class SequenceModel(Model):
                     complete, return_tensors="pt"
                 ).input_ids[0].tolist()
 
-                # The completion result evaluates the global constraint increment
                 if self.critic:
-                    # Calculate the global logarithmic weight for this time
-                    phi_now = await self.critic.score(all_ids)
-                    # If -inf, it will be eliminated immediately
-                    if phi_now == float("-inf"):
+                    # id→bytes
+                    from genlm.backend.tokenization.vocab import decode_vocab
+                    byte_vocab, _ = decode_vocab(self.unit_sampler.tokenizer)  # list[bytes]
+
+                    # int id list to byte
+                    all_bytes = [byte_vocab[b] for b in all_ids]
+
+                    # Score the entire paragraph using CFG
+                    phi_now = await self.critic.prefix(all_bytes)
+
+                    if phi_now == float("-inf"):  #The entire grammar is illegal , Eliminate particles
                         self.finish()
                         return
-                    # Otherwise, update the weight with the difference of "this time - last time"
+
                     prev = getattr(self, "prev_glob_logp", 0.0)
-                    self.score(phi_now - prev)
-                    # Save the global logarithmic weights
+                    self.score(phi_now - prev)  # Update Weights
                     self.prev_glob_logp = phi_now
                 return
         # end

@@ -5,29 +5,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="ba7e3d84-84a5-4d81-bc21-82374b495ef0" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/experiments/python_simple.lark" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/experiments/simplify_lark.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/experiments/mbpp_nosim.py" beforeDir="false" afterPath="$PROJECT_DIR$/experiments/mbpp_nosim.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/experiments/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/experiments/utils.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/experiments/mbpp_sim.py" beforeDir="false" afterPath="$PROJECT_DIR$/experiments/mbpp_sim.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/genlm/control/sampler/sequence.py" beforeDir="false" afterPath="$PROJECT_DIR$/genlm/control/sampler/sequence.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/genlm/control/simulation.py" beforeDir="false" afterPath="$PROJECT_DIR$/genlm/control/simulation.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/genlm/grammar/__init__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/genlm/grammar/cfg.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/genlm/grammar/cfglm.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/genlm/grammar/chart.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/genlm/grammar/fst.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/genlm/grammar/lark_interface.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/genlm/grammar/linear.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/genlm/grammar/lm.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/genlm/grammar/parse/__init__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/genlm/grammar/parse/cky.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/genlm/grammar/parse/earley.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/genlm/grammar/parse/earley_rescaled.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/genlm/grammar/semiring.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/genlm/grammar/util.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/genlm/grammar/wfsa/__init__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/genlm/grammar/wfsa/base.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/genlm/grammar/wfsa/field_wfsa.py" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/nosim_results.csv" beforeDir="false" afterPath="$PROJECT_DIR$/nosim_results.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pyproject.toml" beforeDir="false" afterPath="$PROJECT_DIR$/pyproject.toml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/sim_results.csv" beforeDir="false" afterPath="$PROJECT_DIR$/sim_results.csv" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -137,7 +122,8 @@
       <workItem from="1750631022061" duration="81000" />
       <workItem from="1750631139648" duration="3795000" />
       <workItem from="1750634956826" duration="17545000" />
-      <workItem from="1750671060112" duration="64365000" />
+      <workItem from="1750671060112" duration="69744000" />
+      <workItem from="1751318497891" duration="79939000" />
     </task>
     <servers />
   </component>
@@ -157,6 +143,11 @@
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/genlm/control/potential/base.py</url>
           <option name="timeStamp" value="2" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/experiments/utils.py</url>
+          <line>1</line>
+          <option name="timeStamp" value="3" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
